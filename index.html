@@ -219,7 +219,7 @@
 
   <div id="adminPanelOverlay" class="overlay"><div class="modal"><div class="modal-header"><h2>Key Generator Panel</h2><button id="closeAdminPanelButton" class="btn secondary" type="button">X</button></div><div class="modal-body"><article class="card"><h3>Generate a New Key</h3><p class="muted-copy">Generate working keys, set usage amounts, generate permanent keys, and activate or deactivate any saved key.</p><div class="admin-form admin-form-4"><select id="keyTypeSelect"><option value="limited">Limited Key</option><option value="permanent">Permanent Key</option></select><input id="keyLabelInput" type="text" placeholder="Optional label, like Trial User"><input id="usageAmountInput" type="number" min="1" value="400" placeholder="Usage amount"><button id="generateKeyButton" class="btn primary" type="button">Generate</button></div><div id="generatorStatus" class="status"></div><div class="stats-grid"><div class="detail-box"><h3>Active Keys</h3><div id="activeKeyCount" class="big">0</div></div><div class="detail-box"><h3>Total Keys</h3><div id="totalKeyCount" class="big">0</div></div><div class="detail-box"><h3>Permanent Keys</h3><div id="permanentKeyCount" class="big">0</div></div><div class="detail-box"><h3>Last Generated</h3><div id="lastGeneratedKey" class="big mono">-</div></div></div><div id="adminKeyList" class="admin-list"></div><div id="emptyKeyState" class="empty-state">No keys generated yet.</div></article></div></div></div>
 
-  <script src="app.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
 
