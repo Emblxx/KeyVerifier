@@ -1,7 +1,12 @@
-console.log("🔥 app.js loaded as module");
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  collection
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDXoOuJuZ85PwnMi-RXXhbf_Wi8R5FLBHw",
@@ -15,7 +20,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-console.log("🔥 Firebase initialized");
+console.log("🔥 Firebase connected");
 const STORAGE_KEY = "roaKeyVault";
 const PREFS_KEY = "lightningHubPrefs";
 const CHAT_KEY = "lightningHubChatMessages";
