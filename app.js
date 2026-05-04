@@ -1,5 +1,20 @@
 console.log("🔥 app.js loaded as module");
-console.log("🔥 Firebase setup starting...");
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDXoOuJuZ85PwnMi-RXXhbf_Wi8R5FLBHw",
+  authDomain: "keys-ca90b.firebaseapp.com",
+  projectId: "keys-ca90b",
+  storageBucket: "keys-ca90b.firebasestorage.app",
+  messagingSenderId: "292681753618",
+  appId: "1:292681753618:web:19c7eb33b86c7ddbd1e4cb"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 console.log("🔥 Firebase initialized");
 const STORAGE_KEY = "roaKeyVault";
 const PREFS_KEY = "lightningHubPrefs";
