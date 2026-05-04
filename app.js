@@ -1,7 +1,7 @@
 console.log("🔥 app.js loaded as module");
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDXoOuJuZ85PwnMi-RXXhbf_Wi8R5FLBHw",
