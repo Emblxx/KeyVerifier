@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lightning Hub</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="games-manifest.js"></script>
+</head>
+<body class="mode-locked" data-effects="on" data-background-enabled="on" data-background="none">
+  <div class="storm-bolts" aria-hidden="true">
+    <span class="storm-bolt"></span><span class="storm-bolt"></span><span class="storm-bolt"></span><span class="storm-bolt"></span>
+    <span class="storm-bolt"></span><span class="storm-bolt"></span><span class="storm-bolt"></span><span class="storm-bolt"></span>
+    <i></i><i></i><b></b><b></b>
+  </div>
+  <div id="screenFlash" class="flash"></div>
+  <div class="scene-layer" aria-hidden="true">
+    <div class="scene-blackhole">
+      <span class="bh-glow"></span>
+      <span class="bh-ring bh-ring-a"></span>
+      <span class="bh-ring bh-ring-b"></span>
+      <span class="bh-core"></span>
+      <span class="bh-lens"></span>
+      <span class="bh-debris bh-debris-a"></span>
+      <span class="bh-debris bh-debris-b"></span>
+    </div>
+    <div class="scene-supercell">
+      <span class="sc-anvil sc-anvil-a"></span>
+      <span class="sc-anvil sc-anvil-b"></span>
+      <span class="sc-mid sc-mid-a"></span>
+      <span class="sc-mid sc-mid-b"></span>
+      <span class="sc-wallcloud"></span>
+      <span class="sc-rain sc-rain-a"></span>
+      <span class="sc-rain sc-rain-b"></span>
+      <span class="sc-tornado sc-tornado-a"></span>
+      <span class="sc-tornado sc-tornado-b"></span>
+      <span class="sc-groundfog"></span>
+    </div>
+    <div class="scene-nebula">
+      <span class="nebula-cloud nebula-a"></span>
+      <span class="nebula-cloud nebula-b"></span>
+      <span class="nebula-cloud nebula-c"></span>
+      <span class="nebula-stars"></span>
+    </div>
+    <div class="scene-maelstrom">
+      <span class="maelstrom-ring ring-a"></span>
+      <span class="maelstrom-ring ring-b"></span>
+      <span class="maelstrom-core"></span>
+      <span class="maelstrom-spray"></span>
+    </div>
+    <div class="scene-ionfield">
+      <span class="ion-wave ion-a"></span>
+      <span class="ion-wave ion-b"></span>
+      <span class="ion-wave ion-c"></span>
+      <span class="ion-grid"></span>
+    </div>
+    <div class="scene-eclipse">
+      <span class="eclipse-halo"></span>
+      <span class="eclipse-disc"></span>
+      <span class="eclipse-dust"></span>
+    </div>
+    <div class="scene-tempest">
+      <span class="tempest-band band-a"></span>
+      <span class="tempest-band band-b"></span>
+      <span class="tempest-band band-c"></span>
+      <span class="tempest-rain"></span>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <section class="locked-screen">
+      <div class="topbar">
+        <div class="badge">Key access system online</div>
+        <button id="openAdminButton" class="btn secondary" type="button">Key Generator</button>
+      </div>
+
+      <div class="panel hero lock-hero">
+        <div class="lock-icon">&#128274;</div>
+        <h1 class="lock-title">Locked</h1>
+        <p class="lock-subtitle">Locked</p>
+        <p class="lock-copy">Please send a request for a limited key or paste your key below.</p>
+        <div class="detail-grid">
+          <article class="detail-box"><h3>Release Access</h3><p>Release! I made it to where you guys can have a free limited key. If you want full access with no limitations you have to pay $10.</p></article>
+          <article class="detail-box"><h3>Full Key Rules</h3><p>With the no limitations key you get full access forever unless you share keys, and you also get more access than the limited key.</p></article>
+          <article class="detail-box"><h3>Revoked Keys</h3><p>If your key is saying invalid even though it had a lot of usages, it may have been revoked.</p></article>
+        </div>
+      </div>
+
+      <div class="access-grid">
+        <article class="panel card">
+          <h3>Enter Your Key</h3>
+          <p class="muted-copy">Please send a request for a limited key or paste your key below.</p>
+          <div class="input-row"><input id="keyInput" type="password" placeholder="Paste your key here" autocomplete="off"><button id="checkKeyButton" class="btn primary" type="button">Check Key</button></div>
+          <div class="actions"><a class="btn secondary link-btn" href="https://forms.gle/H9gad7u4sLFwUoYP6" target="_blank" rel="noopener noreferrer">Request Key</a></div>
+          <div id="keyStatus" class="status"></div>
+          <section id="userDashboard" class="dashboard">
+            <h3>Access Granted</h3>
+            <p class="muted-copy">Use your function to open the website. Each use subtracts 1 from the amount left on your key.</p>
+            <div class="stats-grid">
+              <div class="detail-box"><h3>Key ID</h3><div id="dashboardKeyId" class="big mono">-</div></div>
+              <div class="detail-box"><h3>Status</h3><div id="dashboardStatus" class="big">Active</div></div>
+              <div class="detail-box"><h3>Functions Left</h3><div id="dashboardUses" class="big">0</div></div>
+            </div>
+            <div class="actions"><button id="useFunctionButton" class="btn success" type="button">Use One Function. (opens the website)</button><button id="logoutKeyButton" class="btn secondary" type="button">Exit Session</button></div>
+          </section>
+        </article>
+        <article class="panel card">
+          <h3>Release!</h3>
+          <p class="muted-copy">I made it to where you guys can have a free limited key. If you want full access with no limitations you have to pay $10. With the no limitations key you get full access forever unless you share keys and more access than the limited key. Also if your key is saying invalid even though it had a lot of usages, it's because I revoked it.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="hub-screen">
+      <div id="shakeTarget">
+        <div class="topbar">
+          <div class="topbar-wrap">
+            <div class="badge">Unlocked session</div>
+            <div class="badge">Key ID: <span id="activeKeyIdTop" class="mono"></span></div>
+            <div class="badge">Functions left: <span id="activeUsesTop"></span></div>
+          </div>
+          <div class="topbar-wrap">
+            <button id="hubUseFunctionButton" class="btn warning" type="button">Use 1 Function</button>
+            <button id="hubLogoutButton" class="btn secondary" type="button">Exit Session</button>
+            <button id="hubAdminButton" class="btn secondary" type="button">Key Generator</button>
+          </div>
+        </div>
+
+        <section class="panel hero hub-hero">
+          <div class="hero-grid">
+            <div class="wordmark-zone">
+              <div class="made-by">made by roa :D <span class="arrow">&#8600;</span></div>
+              <h1 class="hub-wordmark">Lightning Hub</h1>
+              <div class="title-bolts"><span></span><span></span><span></span><span></span><span></span></div>
+              <p class="muted-copy">Lightning writes the title into view, strikes in the background, and the page shakes rapidly on impact.</p>
+            </div>
+            <article class="card release-card compact-release">
+              <p class="label">Recently added:</p>
+              <div class="release-pill">RELEASE!</div>
+              <p class="muted-copy">Free limited keys are live. Full access keys remove limits, last longer, and unlock more access.</p>
+              <div class="actions"><button id="heroPlayStrike" class="btn primary" type="button">Trigger Lightning</button></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel main-panel">
+          <div class="stats-grid">
+            <article class="card"><h3>Current Key</h3><p id="homeKeyValue" class="mono muted-copy"></p></article>
+            <article class="card"><h3>Functions Left</h3><div id="homeUsesValue" class="big">0</div></article>
+            <article class="card"><h3>Game Library</h3><div id="gameCountValue" class="big">0</div></article>
+          </div>
+
+          <section id="tab-home" class="tab-panel active">
+            <div class="section-head"><p class="label">Home</p><h2>Storm dashboard</h2><p class="muted-copy">Browse the release info, jump into the game archive, change the lightning style, or use the moderated local chat room.</p></div>
+            <div class="two-col">
+              <article class="card"><h3>Recently Added:</h3><div class="release-pill">RELEASE!</div><p class="muted-copy">The release build now supports key-based entry, storm effects, an embedded game player, settings for colors and fonts, and a filtered chat room.</p></article>
+              <article class="card"><h3>Access Details</h3><p class="muted-copy">Release! I made it to where you guys can have a free limited key. If you want full access with no limitations you have to pay $10. With the no limitations key you get full access forever unless you share keys, and you also get more access than the limited key. Also if your key is saying invalid even though it had a lot of usages, it's because I revoked it.</p></article>
+            </div>
+          </section>
+
+          <section id="tab-games" class="tab-panel">
+            <div class="section-head"><p class="label">Games</p><h2>Lightning game vault</h2><p class="muted-copy">Every game HTML file from your extracted archive is listed here.</p></div>
+            <div class="games-layout">
+              <article class="card sticky-card">
+                <div class="input-row"><input id="gameSearchInput" type="text" placeholder="Search game titles or files"><button id="clearGameSearchButton" class="btn secondary" type="button">Clear</button></div>
+                <div class="actions"><div class="badge">Visible: <span id="visibleGameCount">0</span></div><div class="badge">Total: <span id="totalGameCount">0</span></div></div>
+                <div id="gameList" class="game-list"></div>
+              </article>
+              <article class="player-frame">
+                <div class="player-meta">
+                  <div><h3 id="selectedGameTitle">Select a game</h3><p id="selectedGameFile" class="mono muted-copy"></p></div>
+                  <div class="actions player-actions">
+                    <button id="fullscreenGameButton" class="btn primary" type="button">Fullscreen</button>
+                    <a id="openGameWindowLink" class="btn secondary link-btn" href="#" target="_blank" rel="noopener noreferrer">Open in New Tab</a>
+                  </div>
+                </div>
+                <iframe id="gameFrame" title="Selected game" allow="fullscreen; autoplay; gamepad" allowfullscreen srcdoc="<!DOCTYPE html><html><body style='margin:0;display:grid;place-items:center;min-height:100vh;background:#07111f;color:#edf4ff;font-family:Segoe UI,sans-serif;'><div style='text-align:center;padding:2rem;max-width:40rem;'><h2 style='margin:0 0 1rem;'>Game player ready</h2><p style='margin:0;color:#9fb5d4;line-height:1.6;'>Choose any title from the left and it will open here inside the lightning frame.</p></div></body></html>"></iframe>
+              </article>
+            </div>
+          </section>
+
+          <section id="tab-settings" class="tab-panel">
+            <div class="section-head"><p class="label">Settings</p><h2>Storm controls</h2><p class="muted-copy">Disable lightning, change the bolt color, choose the storm environment, and tune the hub style.</p></div>
+            <div id="settingsLockedCard" class="card settings-locked">
+              <h3>Permanent Keys Only</h3>
+              <p class="muted-copy">Settings are locked unless you are using a permanent key. Permanent keys unlock the full storm controls, font controls, and color customization panels.</p>
+            </div>
+            <div id="settingsGrid" class="settings-grid">
+              <article class="card"><h3>Lightning Effects</h3><p class="muted-copy">Disable the animated lightning overlays and shaking.</p><div class="two-btn"><button id="effectsOnButton" class="btn primary" type="button">Enable lightning</button><button id="effectsOffButton" class="btn secondary" type="button">Disable lightning</button></div></article>
+              <article class="card"><h3>Background Effects</h3><p class="muted-copy">Keep the stormy moving background active or turn it off.</p><div class="two-btn"><button id="backgroundOnButton" class="btn primary" type="button">Enable background</button><button id="backgroundOffButton" class="btn secondary" type="button">Disable background</button></div></article>
+              <article class="card"><h3>Lightning Color</h3><p class="muted-copy">Pick from more than twenty lightning colors.</p><select id="lightningColorSelect"></select></article>
+              <article class="card"><h3>Background Color</h3><p class="muted-copy">Change the color tint used across the background system, including blackhole and supercell effects.</p><select id="backgroundColorSelect"></select></article>
+              <article class="card"><h3>Button Accent Color</h3><p class="muted-copy">Change the main button accent color separately from the background.</p><select id="buttonColorSelect"></select></article>
+              <article class="card"><h3>Background Style</h3><p class="muted-copy">Choose between a plain color field, a rotating blackhole, or a storm-heavy supercell scene.</p><select id="backgroundStyleSelect"></select></article>
+              <article class="card wide-card"><h3>Font Choice</h3><p class="muted-copy">Change the font across the whole site using a big preset list.</p><select id="fontSelect"></select></article>
+            </div>
+          </section>
+
+          <section id="tab-chat" class="tab-panel">
+            <div class="section-head"><p class="label">Chat</p><h2>Filtered room</h2><p class="muted-copy">Cussing is allowed, but slurs, hateful variants, and image attempts are blocked. Each message costs 1 function unless you are using a permanent key. User labels also show whether someone is on a permanent or limited key.</p></div>
+            <div class="chat-layout">
+              <article class="card"><h3>Room Setup</h3><p class="muted-copy">Choose a display name and send text-only messages. Photos are not allowed.</p><input id="chatNameInput" type="text" placeholder="Choose a display name" maxlength="24"><textarea id="chatMessageInput" placeholder="Say something here"></textarea><div class="actions"><button id="sendChatButton" class="btn primary" type="button">Send message</button></div><div id="chatStatus" class="status"></div></article>
+              <article class="card"><h3>Messages</h3><div id="chatMessages" class="messages"></div><div id="chatEmptyState" class="empty-state">No messages yet.</div></article>
+            </div>
+          </section>
+        </section>
+      </div>
+
+      <nav class="bottom-nav">
+        <button class="nav-button active" data-tab="home" type="button">Home</button>
+        <button class="nav-button" data-tab="games" type="button">Games</button>
+        <button class="nav-button" data-tab="settings" type="button">Settings</button>
+        <button class="nav-button" data-tab="chat" type="button">Chat</button>
+      </nav>
+    </section>
+  </div>
+
+  <div id="adminCodeOverlay" class="overlay"><div class="modal"><div class="modal-header"><h2>Admin Access</h2><button id="closeAdminCodeButton" class="btn secondary" type="button">X</button></div><div class="modal-body"><article class="card"><h3>Enter Generator Code</h3><p class="muted-copy">Type the code to open the key generator interface.</p><div class="input-row"><input id="adminCodeInput" type="password" placeholder="Enter admin code" autocomplete="off"><button id="unlockAdminButton" class="btn primary" type="button">Confirm</button></div><div id="adminCodeStatus" class="status"></div></article></div></div></div>
+
+  <div id="adminPanelOverlay" class="overlay"><div class="modal"><div class="modal-header"><h2>Key Generator Panel</h2><button id="closeAdminPanelButton" class="btn secondary" type="button">X</button></div><div class="modal-body"><article class="card"><h3>Generate a New Key</h3><p class="muted-copy">Generate working keys, set usage amounts, generate permanent keys, and activate or deactivate any saved key.</p><div class="admin-form admin-form-4"><select id="keyTypeSelect"><option value="limited">Limited Key</option><option value="permanent">Permanent Key</option></select><input id="keyLabelInput" type="text" placeholder="Optional label, like Trial User"><input id="usageAmountInput" type="number" min="1" value="400" placeholder="Usage amount"><button id="generateKeyButton" class="btn primary" type="button">Generate</button></div><div id="generatorStatus" class="status"></div><div class="stats-grid"><div class="detail-box"><h3>Active Keys</h3><div id="activeKeyCount" class="big">0</div></div><div class="detail-box"><h3>Total Keys</h3><div id="totalKeyCount" class="big">0</div></div><div class="detail-box"><h3>Permanent Keys</h3><div id="permanentKeyCount" class="big">0</div></div><div class="detail-box"><h3>Last Generated</h3><div id="lastGeneratedKey" class="big mono">-</div></div></div><div id="adminKeyList" class="admin-list"></div><div id="emptyKeyState" class="empty-state">No keys generated yet.</div></article></div></div></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
