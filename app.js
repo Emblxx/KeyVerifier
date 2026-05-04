@@ -19,7 +19,17 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
+async function fetchKeyFromServer(keyValue) {
+  const keysRef = doc(db, "keys", keyValue);
+
+  const snapshot = await getDoc(keysRef);
+
+  if (!snapshot.exists()) return null;
+
+  return snapshot.data();
+}
 console.log("🔥 Firebase connected");
 const STORAGE_KEY = "roaKeyVault";
 const PREFS_KEY = "lightningHubPrefs";
