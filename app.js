@@ -1,3 +1,4 @@
+console.log("🔥 app.js loaded as module");
 const STORAGE_KEY = "roaKeyVault";
 const PREFS_KEY = "lightningHubPrefs";
 const CHAT_KEY = "lightningHubChatMessages";
