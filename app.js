@@ -1,4 +1,6 @@
 console.log("🔥 app.js loaded as module");
+console.log("🔥 Firebase setup starting...");
+console.log("🔥 Firebase initialized");
 const STORAGE_KEY = "roaKeyVault";
 const PREFS_KEY = "lightningHubPrefs";
 const CHAT_KEY = "lightningHubChatMessages";
