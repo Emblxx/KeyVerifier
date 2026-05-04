@@ -1,11 +1,13 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
   doc,
-  getDoc,
-  setDoc,
   updateDoc,
-  collection
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -19,16 +21,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-async function fetchKeyFromServer(keyValue) {
-  const keysRef = doc(db, "keys", keyValue);
+async function consumeKey(entry) {
+  // If permanent key → do nothing
+  if (entry.type === "permanent") return;
 
-  const snapshot = await getDoc(keysRef);
+  // Point to the exact document in Firestore
+  const keyRef = doc(db, "keys", entry.id);
 
-  if (!snapshot.exists()) return null;
-
-  return snapshot.data();
+  // Subtract 1 use in Firestore (server-side)
+  await updateDoc(keyRef, {
+    remainingUses: increment(-1)
+  });
 }
 console.log("🔥 Firebase connected");
 const STORAGE_KEY = "roaKeyVault";
@@ -45,6 +50,25 @@ const FONT_CHOICES = [["Trebuchet MS", '"Trebuchet MS", "Segoe UI", sans-serif']
 const defaults = { effects: "on", backgroundEnabled: "on", background: "none", lightningColor: LIGHTNING_COLORS[2][1], backgroundColor: LIGHTNING_COLORS[0][1], buttonColor: LIGHTNING_COLORS[2][1], font: FONT_CHOICES[0][1] };
 const state = { sessionKeyId: null, selectedTab: "home", selectedGame: null, gameFilter: "", chatChannel: null, chatMessages: [], prefs: { ...defaults } };
 const $ = (id) => document.getElementById(id);
+async function getKeyFromServer(value) {
+  const q = query(
+    collection(db, "keys"),
+    where("value", "==", value.trim())
+  );
+
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    return null;
+  }
+
+  const doc = snap.docs[0];
+
+  return {
+    id: doc.id,
+    ...doc.data()
+  };
+}
 const els = { body: document.body, keyInput: $("keyInput"), checkKeyButton: $("checkKeyButton"), keyStatus: $("keyStatus"), userDashboard: $("userDashboard"), dashboardKeyId: $("dashboardKeyId"), dashboardStatus: $("dashboardStatus"), dashboardUses: $("dashboardUses"), useFunctionButton: $("useFunctionButton"), logoutKeyButton: $("logoutKeyButton"), openAdminButton: $("openAdminButton"), hubAdminButton: $("hubAdminButton"), adminCodeOverlay: $("adminCodeOverlay"), adminCodeInput: $("adminCodeInput"), adminCodeStatus: $("adminCodeStatus"), closeAdminCodeButton: $("closeAdminCodeButton"), unlockAdminButton: $("unlockAdminButton"), adminPanelOverlay: $("adminPanelOverlay"), closeAdminPanelButton: $("closeAdminPanelButton"), keyTypeSelect: $("keyTypeSelect"), keyLabelInput: $("keyLabelInput"), usageAmountInput: $("usageAmountInput"), generateKeyButton: $("generateKeyButton"), generatorStatus: $("generatorStatus"), activeKeyCount: $("activeKeyCount"), totalKeyCount: $("totalKeyCount"), permanentKeyCount: $("permanentKeyCount"), lastGeneratedKey: $("lastGeneratedKey"), adminKeyList: $("adminKeyList"), emptyKeyState: $("emptyKeyState"), navButtons: [...document.querySelectorAll(".nav-button")], tabPanels: [...document.querySelectorAll(".tab-panel")], settingsLockedCard: $("settingsLockedCard"), settingsGrid: $("settingsGrid"), activeKeyIdTop: $("activeKeyIdTop"), activeUsesTop: $("activeUsesTop"), homeKeyValue: $("homeKeyValue"), homeUsesValue: $("homeUsesValue"), gameCountValue: $("gameCountValue"), heroPlayStrike: $("heroPlayStrike"), screenFlash: $("screenFlash"), shakeTarget: $("shakeTarget"), gameSearchInput: $("gameSearchInput"), clearGameSearchButton: $("clearGameSearchButton"), visibleGameCount: $("visibleGameCount"), totalGameCount: $("totalGameCount"), gameList: $("gameList"), selectedGameTitle: $("selectedGameTitle"), selectedGameFile: $("selectedGameFile"), openGameWindowLink: $("openGameWindowLink"), fullscreenGameButton: $("fullscreenGameButton"), gameFrame: $("gameFrame"), effectsOnButton: $("effectsOnButton"), effectsOffButton: $("effectsOffButton"), backgroundOnButton: $("backgroundOnButton"), backgroundOffButton: $("backgroundOffButton"), lightningColorSelect: $("lightningColorSelect"), backgroundColorSelect: $("backgroundColorSelect"), buttonColorSelect: $("buttonColorSelect"), backgroundStyleSelect: $("backgroundStyleSelect"), fontSelect: $("fontSelect"), chatNameInput: $("chatNameInput"), chatMessageInput: $("chatMessageInput"), sendChatButton: $("sendChatButton"), chatStatus: $("chatStatus"), chatMessages: $("chatMessages"), chatEmptyState: $("chatEmptyState"), hubUseFunctionButton: $("hubUseFunctionButton"), hubLogoutButton: $("hubLogoutButton") };
 function setStatus(el, message, type = "") { el.textContent = message; el.className = "status" + (type ? " " + type : ""); }
 function loadKeys() { try { const raw = localStorage.getItem(STORAGE_KEY); const parsed = raw ? JSON.parse(raw) : []; return Array.isArray(parsed) ? parsed : []; } catch { return []; } }
@@ -52,7 +76,6 @@ function saveKeys(keys) { localStorage.setItem(STORAGE_KEY, JSON.stringify(keys)
 function generateSegment(length) { const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; let out = ""; for (let i = 0; i < length; i += 1) out += alphabet[Math.floor(Math.random() * alphabet.length)]; return out; }
 function createKeyValue(existing) { let value = ""; do { value = "RoaKey-" + generateSegment(9); } while (existing.some((x) => x.value === value)); return value; }
 function createKeyId(existing) { let id = ""; do { id = "KEY-" + generateSegment(6).toUpperCase(); } while (existing.some((x) => x.id === id)); return id; }
-function getKeyByValue(value) { return loadKeys().find((item) => item.value === value.trim()) || null; }
 function getKeyById(id) { return loadKeys().find((item) => item.id === id) || null; }
 function loadPrefs() { try { const raw = localStorage.getItem(PREFS_KEY); state.prefs = { ...defaults, ...(raw ? JSON.parse(raw) : {}) }; } catch { state.prefs = { ...defaults }; } }
 function savePrefs() { localStorage.setItem(PREFS_KEY, JSON.stringify(state.prefs)); }
@@ -148,8 +171,43 @@ function initChatSync() { loadChatMessages(); renderChat(); if ("BroadcastChanne
 function handleSendChat() { const name = els.chatNameInput.value.trim() || "Anonymous"; const text = els.chatMessageInput.value.trim(); const entry = currentSessionEntry(); if (!entry) return setStatus(els.chatStatus, "You need an active key session to chat.", "error"); if (!text) return setStatus(els.chatStatus, "Write a message first.", "error"); if (containsImageAttempt(text)) return setStatus(els.chatStatus, "Photos and image links are not allowed in chat.", "error"); if (containsBlockedLanguage(text)) return setStatus(els.chatStatus, "That message was blocked because it looks like hateful or slur-based language.", "error"); if (name.length > 24) return setStatus(els.chatStatus, "Display name is too long.", "error"); if (!consumeOneFunction(false)) return setStatus(els.chatStatus, "You need 1 function available to send a chat message.", "error"); addChatMessage(name, text, entry); els.chatMessageInput.value = ""; setStatus(els.chatStatus, isPermanentKey(entry) ? "Message sent with permanent key access." : "Message sent. 1 function used.", "ok"); }
 function seedFromSavedSession() { const saved = localStorage.getItem(ACTIVE_KEY_STORAGE); if (!saved) return; const entry = getKeyById(saved); if (entry && entry.active && (isPermanentKey(entry) || entry.remainingUses > 0)) { state.sessionKeyId = entry.id; updateDashboardFromSession(); } else localStorage.removeItem(ACTIVE_KEY_STORAGE); }
 
-els.checkKeyButton.addEventListener("click", () => { const value = els.keyInput.value.trim(); if (!value) return setStatus(els.keyStatus, "Enter a key first.", "error"); const entry = getKeyByValue(value); if (!entry) return setStatus(els.keyStatus, "Key not found.", "error"); if (!entry.active) return setStatus(els.keyStatus, "This key is inactive.", "error"); if (!isPermanentKey(entry) && entry.remainingUses <= 0) return setStatus(els.keyStatus, "This key has no functions left.", "error"); state.sessionKeyId = entry.id; localStorage.setItem(ACTIVE_KEY_STORAGE, entry.id); setStatus(els.keyStatus, "Key accepted. Use your function to open Lightning Hub.", "ok"); updateDashboardFromSession(); });
-els.keyInput.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); els.checkKeyButton.click(); } });
+els.checkKeyButton.addEventListener("click", async () => {
+  const value = els.keyInput.value.trim();
+
+  if (!value) {
+    setStatus(els.keyStatus, "Enter a key first.", "error");
+    return;
+  }
+
+  const entry = await getKeyFromServer(value);
+
+  if (!entry) {
+    setStatus(els.keyStatus, "Key not found.", "error");
+    return;
+  }
+
+  if (!entry.active) {
+    setStatus(els.keyStatus, "This key is inactive.", "error");
+    return;
+  }
+
+  if (entry.type !== "permanent" && entry.remainingUses <= 0) {
+    setStatus(els.keyStatus, "This key has no uses left.", "error");
+    return;
+  }
+
+  // Save session
+  state.sessionKeyId = entry.id;
+  localStorage.setItem(ACTIVE_KEY_STORAGE, entry.id);
+
+  // subtract usage (ONLY for limited keys)
+  await consumeKey(entry);
+
+  setStatus(els.keyStatus, "Key accepted. Loading...", "ok");
+
+  updateDashboardFromSession();
+  activateHub();
+});
 els.useFunctionButton.addEventListener("click", () => consumeOneFunction(true));
 els.hubUseFunctionButton.addEventListener("click", () => { if (consumeOneFunction()) playStormSequence(); });
 function logoutSession() { state.sessionKeyId = null; localStorage.removeItem(ACTIVE_KEY_STORAGE); els.userDashboard.classList.remove("visible"); els.keyInput.value = ""; els.body.classList.remove("mode-hub"); els.body.classList.add("mode-locked"); updateHubSessionUI(null); setStatus(els.keyStatus, "Session closed."); }
