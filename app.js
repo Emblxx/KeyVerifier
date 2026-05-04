@@ -9,39 +9,38 @@ import {
 
 // ================= FIREBASE =================
 const firebaseConfig = {
-  apiKey: "AIzaSyDXoOuJuZ85PwnMi-RXXhbf_Wi8R5FLBHw",
-  authDomain: "keys-ca90b.firebaseapp.com",
-  projectId: "keys-ca90b",
-  storageBucket: "keys-ca90b.firebasestorage.app",
-  messagingSenderId: "292681753618",
-  appId: "1:292681753618:web:19c7eb33b86c7ddbd1e4cb"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-console.log("🔥 Firebase connected");
 
 // ================= STATE =================
 const state = {
   sessionKeyId: null
 };
 
-const ACTIVE_KEY_STORAGE = "activeKey";
-
-// ================= UI ELEMENTS =================
+// ================= ELEMENTS =================
 const els = {
   keyInput: document.getElementById("keyInput"),
   checkKeyButton: document.getElementById("checkKeyButton"),
-  keyStatus: document.getElementById("keyStatus")
+  keyStatus: document.getElementById("keyStatus"),
+  dashboard: document.getElementById("userDashboard"),
+  dashboardKeyId: document.getElementById("dashboardKeyId"),
+  dashboardStatus: document.getElementById("dashboardStatus")
 };
 
-function setStatus(el, msg) {
-  el.textContent = msg;
+function setStatus(msg) {
+  els.keyStatus.textContent = msg;
 }
 
-// ================= GET KEY =================
-async function getKeyFromServer(value) {
+// ================= FIRESTORE KEY FETCH =================
+async function getKey(value) {
   const q = query(
     collection(db, "keys"),
     where("value", "==", value.trim())
@@ -50,11 +49,9 @@ async function getKeyFromServer(value) {
   const snap = await getDocs(q);
   if (snap.empty) return null;
 
-  const docSnap = snap.docs[0];
-
   return {
-    id: docSnap.id,
-    ...docSnap.data()
+    id: snap.docs[0].id,
+    ...snap.docs[0].data()
   };
 }
 
@@ -63,33 +60,35 @@ els.checkKeyButton.addEventListener("click", async () => {
   const value = els.keyInput.value.trim();
 
   if (!value) {
-    setStatus(els.keyStatus, "Enter a key first.");
+    setStatus("Enter a key first.");
     return;
   }
 
-  const entry = await getKeyFromServer(value);
+  const key = await getKey(value);
 
-  if (!entry) {
-    setStatus(els.keyStatus, "Key not found.");
+  if (!key) {
+    setStatus("Key not found.");
     return;
   }
 
-  if (!entry.active) {
-    setStatus(els.keyStatus, "Key inactive.");
+  if (!key.active) {
+    setStatus("Key inactive.");
     return;
   }
 
-  if (entry.type !== "permanent" && entry.remainingUses <= 0) {
-    setStatus(els.keyStatus, "No uses left.");
+  if (key.type !== "permanent" && key.remainingUses <= 0) {
+    setStatus("No uses left.");
     return;
   }
 
-  state.sessionKeyId = entry.id;
-  localStorage.setItem(ACTIVE_KEY_STORAGE, entry.id);
+  // SAVE SESSION
+  state.sessionKeyId = key.id;
+  localStorage.setItem("activeKey", key.id);
 
-  setStatus(els.keyStatus, "Key accepted.");
+  // UI UPDATE
+  setStatus("Key accepted.");
 
-  // hook into your UI (already exists in your main file)
-  if (typeof updateDashboardFromSession === "function") updateDashboardFromSession();
-  if (typeof activateHub === "function") activateHub();
+  els.dashboard.style.display = "block";
+  els.dashboardKeyId.textContent = key.id;
+  els.dashboardStatus.textContent = key.type;
 });
